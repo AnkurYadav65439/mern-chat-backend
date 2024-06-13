@@ -24,7 +24,7 @@ const signup = async (req, res) => {
         //want user to direclty login after signup(or just called signin)
         const token = jwt.sign({ id: newuser._id, username: newuser.username }, process.env.JWT_SECRET);
 
-        res.cookie('token', token).status(201).json({ username: newuser.username, id: newuser._id });
+        res.cookie('token', token, { httpOnly: true }).status(201).json({ username: newuser.username, id: newuser._id });
 
     } catch (error) {
         console.log(error);
@@ -51,7 +51,7 @@ const signin = async (req, res) => {
         //user email, pw is correct
         const token = jwt.sign({ id: user._id, username: user.username }, process.env.JWT_SECRET);
 
-        res.cookie('token', token, { secure: true, sameSite: 'none' }).status(200).json({ username: user.username, id: user._id });
+        res.cookie('token', token, { httpOnly: true }).status(200).json({ username: user.username, id: user._id });
 
     } catch (error) {
         console.log(error);
