@@ -47,13 +47,13 @@ const server = app.listen(port, () => {
 const wss = new WebSocketServer({ server });
 wss.on("connection", (connection, req) => {
 
-    // const notifyAboutOnlinePeople = () => {
-    //     [...wss.clients].forEach(c => {
-    //         c.send(JSON.stringify({
-    //             online: [...wss.clients].map(c => ({ userId: c.userId, username: c.username }))
-    //         }))
-    //     })
-    // }
+    const notifyAboutOnlinePeople = () => {
+        [...wss.clients].forEach(c => {
+            c.send(JSON.stringify({
+                online: [...wss.clients].map(c => ({ userId: c.userId, username: c.username }))
+            }))
+        })
+    }
 
     //(at last) modern and robust way to ping user to check whether its connected still or responsive, notify other users if not
     connection.isAlive = true;   //?need
@@ -66,12 +66,7 @@ wss.on("connection", (connection, req) => {
             clearInterval(connection.timer);
             connection.terminate();
             console.log("connection terminated, online  will sent ", [...wss.clients].length);
-            // notifyAboutOnlinePeople();
-            [...wss.clients].forEach(c => {
-                c.send(JSON.stringify({
-                    online: [...wss.clients].map(c => ({ userId: c.userId, username: c.username }))
-                }))
-            })
+            notifyAboutOnlinePeople();
             console.log('dead');
         }, 1000);
     }, 5000);
@@ -115,13 +110,7 @@ wss.on("connection", (connection, req) => {
     });
 
     //notify to all clients about all online users
-    // notifyAboutOnlinePeople();
-    [...wss.clients].forEach(c => {
-        c.send(JSON.stringify({
-            online: [...wss.clients].map(c => ({ userId: c.userId, username: c.username }))
-        }))
-    })
-    console.log("new connection sending")
+    notifyAboutOnlinePeople();
 
     // simpler method to noify when a user is disconnected (advanced is using ping - pong (implemented))
     // connection.on("close", (connection) => {
